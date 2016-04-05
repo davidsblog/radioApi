@@ -1,6 +1,8 @@
 radioApi
 ====
 
+##Work in progress...
+
 A small web API for playing internet radio streams using **madplay**.  I am currently using it on a router running OpenWrt, but 
 I will use it on a Raspberry Pi too at some point.  These build instructions are aimed at Debian-based systems.
 
