@@ -1,12 +1,58 @@
 radioApi
 ====
 
-A small web API for playing internet radio using <b>madplay</b>.
+A small web API for playing internet radio using **madplay**.  I am currently using it on a router running OpenWrt, but 
+I will use it on a Raspberry Pi too at some point.
+
+To see details of the API, build and run the code and use the API link from the top menu to view `/doc.html` in your browser.
+
+Prerequisites
+====
+
+You will need **wget** to read the streams, but it should be installed already.
+
+You'll need **madplay** to play the files:
+
+```
+sudo apt-get install madplay
+```
+
+You'll need **alsa-utils** for the volume control feature:
+
+```
+sudo apt-get install alsa-utils
+```
+
+Test these by doing:
+
+```
+madplay --help
+amixer --help
+```
+
+To make sure they display the help.
 
 Building
 ========
 
-Work in progress
+On most Debian based systems you should be able to do this:
+
+```
+git clone https://github.com/davidsblog/radioApi.git
+cd radioApi/radioApi/
+make
+```
+
+Running
+=======
+
+After building from source, as long as you are in the `radioApi/radioApi` directory, you can do this:
+
+```
+./radioApi 8112
+```
+
+..which will run the server on port `8112` and so you can point your browser to http://localhost:8112 and try it out.
 
 License
 =======
