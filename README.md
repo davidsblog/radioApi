@@ -3,12 +3,12 @@ radioApi
 
 ##Work in progress...
 
-A small web API for playing internet radio streams using **madplay**.  I am currently using it on a router running OpenWrt, but 
+A small Web-API for playing internet radio streams using **madplay**.  I am currently using it on a router running OpenWrt, but 
 I will use it on a Raspberry Pi too at some point.  These build instructions are aimed at Debian-based systems.
 
-I have made a simple web-based UI which I'm using in the browser of my Android phone to work as a remote control. 
+I have included a simple web-based UI which I'm using in the browser of my Android phone to work as a remote control. 
 
-To see details of the API, build and run the code and use the API link from the top menu to view `/doc.html` in your browser.
+To see details of the API, build and run the code and use the `API` link from the top menu to view `/doc.html` in your browser.
 
 **NOTE: the code is set for using the _headphone socket_ as the audio output.**
 
@@ -29,14 +29,14 @@ You'll need **alsa-utils** for the volume control feature:
 sudo apt-get install alsa-utils
 ```
 
-Please test these are working by doing:
+Please test these packages are working by doing:
 
 ```
 madplay --help
 amixer --help
 ```
 
-...to make sure they display the help text, the code won't work without them.
+...to make sure they display their help texts, the code won't work without them.
 
 Building
 ========
@@ -58,7 +58,7 @@ After building from the source, as long as you are in the `radioApi/radioApi` di
 ./radioApi 8112
 ```
 
-..which will run the server on port `8112` and you can point your browser to http://localhost:8112 and try it out.
+...which will run the server on port `8112` and you can point your browser to http://localhost:8112 and try it out.
 
 License
 =======
