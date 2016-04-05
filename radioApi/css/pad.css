@@ -1,0 +1,59 @@
+body
+{
+    margin-top: 60px;
+}
+
+.input-huge
+{
+    width:98%;
+    height:130px;
+    font-size: 90px;
+    margin-bottom: 2px;
+}
+
+.input-medium
+{
+    width:98%;
+    height:65px;
+    font-size: 45px;
+    margin-bottom: 1px;
+}
+
+.btn-pad
+{
+    width: 32%;
+    height: 75px;
+    margin-bottom: 2px;
+
+    /* this was useful: http://charliepark.org/bootstrap_buttons/ */
+    background-color: hsl(0, 0%, 52%) !important;
+    background-repeat: repeat-x;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#b2b2b2", endColorstr="#848484");
+    background-image: -khtml-gradient(linear, left top, left bottom, from(#b2b2b2), to(#848484));
+    background-image: -moz-linear-gradient(top, #b2b2b2, #848484);
+    background-image: -ms-linear-gradient(top, #b2b2b2, #848484);
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #b2b2b2), color-stop(100%, #848484));
+    background-image: -webkit-linear-gradient(top, #b2b2b2, #848484);
+    background-image: -o-linear-gradient(top, #b2b2b2, #848484);
+    background-image: linear-gradient(#b2b2b2, #848484);
+    border-color: #848484 #848484 hsl(0, 0%, 47.5%);
+}
+
+.btn-pad-cnt
+{
+    background-color: silver;
+}
+
+.badge-huge
+{
+    font-size: 65px;
+    margin-top: -10px;
+    background-color: transparent;
+}
+
+.glyph-huge
+{
+    margin-top: -4px;
+    font-size: 60px;
+    color: darkred;
+}
