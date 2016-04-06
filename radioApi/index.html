@@ -8,6 +8,7 @@
         <link rel="stylesheet" href="css/bootstrap.min.css" />
         <link rel="stylesheet" href="css/bootstrap-theme.min.css" />
         <link rel="stylesheet" href="css/pad.css">
+        <link rel="stylesheet" href="css/slider.css">
     </head>
     <body>
         
@@ -102,6 +103,14 @@
                     <div id="debug" class="text-muted">&nbsp;</div>
                 </div>
             </div>
+            
+            <div class="row text-center">
+	      <div class="col-md-4 col-md-offset-4">
+		<label for="slider">Volume</label>
+		<div id="slider" style="width:340px" >&nbsp;</div>
+	      </div>
+            </div>
+            
         </div>
         
         
@@ -112,6 +121,8 @@
 <script src="js/bootstrap.min.js"></script>
 <!-- IE10 viewport hack for surface/desktop Windows 8 bug -->
 <script src="js/ie10-viewport-bug-workaround.js"></script>
+<!-- slider control: http://www.eyecon.ro/bootstrap-slider/ -->
+<script src="js/bootstrap-slider.js"></script>
 
 <script>
 var volume = 1;
@@ -119,36 +130,46 @@ var mute = 0;
 
 $(function ()
 {
+  $('#slider').slider({ value: volume })
+    .on('slide', function(ev)
+    {
+       if (volume == ev.value) return;
+       var text = ev.value > volume ? "VOL UP" : "VOL DOWN";
+       volume = ev.value;
+       command("volume", ev.value, text);
+    }
+  );
+  
   $("button").click(function ()
   {
     if (this.id==="stp")
     {
-        $("#number").val("STOP");
         playstation("stop");
-        afterCommand();
     }
     else if (this.id==="mute")
     {
         if (mute==0)
         {
-	  command("volume", "0");
+	  command("volume", "0", "MUTE ON");
 	  mute = 1;
 	}
 	else
 	{
-	  command("volume", volume.toString());
+	  command("volume", volume.toString(), "MUTE OFF");
 	  mute = 0;
 	}
     }
     else if (this.id==="dn")
     {
         if (--volume<0) volume = 0;
-        command("volume", volume.toString());
+        $('#slider').slider('setValue', volume);
+        command("volume", volume.toString(), "VOL DOWN");
     }
     else if (this.id==="up")
     {
         if (++volume>10) volume = 10;
-        command("volume", volume.toString());
+        $('#slider').slider('setValue', volume);
+        command("volume", volume.toString(), "VOL UP");
     }
     else if (this.id==="ply")
     {
@@ -161,7 +182,6 @@ $(function ()
         {
           station = $("#manualstation").val();
         }
-        $("#number").val("PLAYING");
         playstation(station);
     }
   });
@@ -175,11 +195,19 @@ function playstation(station)
         method: "post",
     }).done(function(data)
     {
-        console.log(data);
+        if (station === "stop")
+        {
+          $("#number").val(data.startsWith("OK") ? "STOP" : "ERROR");
+          setTimeout(function(){ $("#number").val(""); }, 1000);
+        }
+        else
+        {
+          $("#number").val(data.startsWith("OK") ? "PLAYING" : "ERROR");
+        }
     });
 }
 
-function command(type, val)
+function command(type, val, display)
 {
     $.ajax({
         url: "api",
@@ -187,13 +215,9 @@ function command(type, val)
         method: "post",
     }).done(function(data)
     {
-        console.log(data);
+        $("#number").val(data.startsWith("OK") ? display : "ERROR");
+        setTimeout(function(){ $("#number").val(""); }, 1000);
     });
-}
-
-function afterCommand()
-{
-    setTimeout(function(){ $("#number").val(""); }, 1000);
 }
 </script>
 

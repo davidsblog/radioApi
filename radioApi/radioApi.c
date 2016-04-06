@@ -57,7 +57,7 @@ int run(char **cmd);
 
 struct termios original_settings;
 pthread_t server_thread_id;
-int volpc = 10, lastwgetpid = 0, lastplayerpid = 0;
+int volpc = 8, lastwgetpid = 0, lastplayerpid = 0;
 
 void* server_thread(void *args)
 {
@@ -183,19 +183,19 @@ void send_api_response(struct hitArgs *args, char *path, char *request_body)
       else if (strncmp("volup", form_name(args, v), 5) == 0)
       {
 	// increase volume
-	volpc += volpc>=100 ? 0 : 3;
+	volpc += volpc>=80 ? 0 : 4;
 	error = adjust_volume(volpc);
       }
       else if (strncmp("voldn", form_name(args, v), 5) == 0)
       {
 	// decrease volume
-	volpc -= volpc<=0 ? 0 : 3;
+	volpc -= volpc<=0 ? 0 : 4;
 	error = adjust_volume(volpc);
       }
       else if (strncmp("volume", form_name(args, v), 6) == 0)
       {
 	// set volume
-	volpc = 10 * atoi(form_value(args, v));
+	volpc = 8 * atoi(form_value(args, v));
 	error = adjust_volume(volpc);
       }
     }        
