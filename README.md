@@ -4,7 +4,7 @@ radioApi
 ##Work in progress...
 
 A small Web-API for playing internet radio streams using **madplay**.  I am currently using it on a router running OpenWrt, but 
-I will use it on a Raspberry Pi too at some point.  These build instructions are aimed at Debian-based systems.
+I will use it on a Raspberry Pi too at some point.  *These* build instructions are aimed at Debian-based systems.
 
 I have included a simple web-based UI which I'm using in the browser of my Android phone to work as a remote control. 
 
@@ -38,27 +38,33 @@ amixer --help
 
 ...to make sure they display their help texts, the code won't work without them.
 
-Building
-========
+###How to build and run
 
-On most Debian based systems you should be able to do this:
+#####On Debian based systems (and the Raspberry Pi probaby)
+You should be able to do this:
+```
+git clone https://github.com/davidsblog/radioApi
+cd radioApi/radioApi/
+sudo make install
+```
+...which will build everything and install it as a service (it will run at system start-up).  **The server will run on port 8112.** That means you can view the player by visiting http://192.168.1.2:8112/ (you need to substitute your machine's IP address). You can remove it from your system like this (assuming you are still in the `radioApi/radioApi/` directory):
+```
+sudo make uninstall
+```
+
+**NOTE:** the `sudo` before calling make above is important, since you're installing services.
+
+#####Runing manually (or on different Linux versions)
+Just do this:
 
 ```
-git clone https://github.com/davidsblog/radioApi.git
+git clone https://github.com/davidsblog/radioApi
 cd radioApi/radioApi/
 make
+sudo ./radioApi 80
 ```
 
-Running
-=======
-
-After building from the source, as long as you are in the `radioApi/radioApi` directory, you can do this:
-
-```
-./radioApi 8112
-```
-
-...which will run the server on port `8112` and you can point your browser to http://localhost:8112 and try it out.
+You might have a webserver already running on port 80, in which case you can specify a different port by passing a different parameter than **80** in the last line above.
 
 License
 =======
