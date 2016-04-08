@@ -41,14 +41,14 @@
 	    <div class="col-md-8 col-md-offset-2">
               
               <h2>Documentation:</h2>
-              <p>The following examples assume that you are running the Radio API locally on port 8111.  If that is the case, then 
+              <p>The following examples assume that you are running the Radio API locally on port 8112.  If that is the case, then 
               both the <b>"Try it"</b> examples and the <code>curl</code> sample commands should work.</p>
               <hr/>
               
               <h3>Play a stream:</h3>
               <p>To play a stream, post a form field called <b>streamurl</b> with a <i><u>url encoded</u></i> value containing the 
               stream URL to <code>/api</code>, eg:<br/>
-              <code>curl --data "streamurl=your_encoded_url" http://localhost:8111/api</code>
+              <code>curl --data "streamurl=your_encoded_url" http://localhost:8112/api</code>
               <p>On success, the result will be a status code 200 with the text <code>OK</code>.</p>
               <form action="api" name="streamplaymanual" method="post" enctype="application/x-www-form-urlencoded">
 		Try it, enter a stream URL:  
@@ -81,7 +81,7 @@
               <h3>Stop playing:</h3>
               <p>To stop playing, post a form field called <b>streamurl</b> with a value of <b>stop</b> 
               to <code>/api</code>, eg:<br/>
-              <code>curl --data "streamurl=stop" http://localhost:8111/api</code>
+              <code>curl --data "streamurl=stop" http://localhost:8112/api</code>
               <p>On success, the result will be a status code 200 with the text <code>OK</code>.</p>
               <form action="api" name="streamstopplay" method="post" enctype="application/x-www-form-urlencoded">
 		Try it: <input type="submit" name="streamurl" value="stop" />
@@ -92,7 +92,7 @@
               <h3>Increase volume:</h3>
               <p>To increase the volume, post a form field called <b>volup</b> with a value of <b>up</b> 
               to <code>/api</code>, eg:<br/>
-              <code>curl --data "volup=up" http://localhost:8111/api</code>
+              <code>curl --data "volup=up" http://localhost:8112/api</code>
               <p>On success, the result will be a status code 200 with the text <code>OK</code>.</p>
               <form action="api" name="volumeinc" method="post" enctype="application/x-www-form-urlencoded"> 
 		Try it: <input type="submit" name="volup" value="up" />
@@ -104,7 +104,7 @@
               <h3>Reduce volume:</h3>
               <p>To reduce the volume, post a form field called <b>voldn</b> with a value of <b>dn</b> 
               to <code>/api</code>, eg:<br/>
-              <code>curl --data "voldn=dn" http://localhost:8111/api</code>
+              <code>curl --data "voldn=dn" http://localhost:8112/api</code>
               <p>On success, the result will be a status code 200 with the text <code>OK</code>.</p>
               <form action="api" name="volumedec" method="post" enctype="application/x-www-form-urlencoded"> 
 		Try it: <input type="submit" name="voldn" value="dn" />
@@ -116,7 +116,7 @@
               <h3>Set volume:</h3>
               <p>To set a <i>specific</i> volume, post a form field called <b>volume</b> with a value in the range 
               <b>0 - 10</b> to <code>/api</code>, eg:<br/>
-              <code>curl --data "volume=5" http://localhost:8111/api</code>
+              <code>curl --data "volume=5" http://localhost:8112/api</code>
               <p>On success, the result will be a status code 200 with the text <code>OK</code>.</p>
               <form action="api" name="volumeset" method="post" enctype="application/x-www-form-urlencoded"> 
 		<input type="radio" name="volume" value="0" />Mute
@@ -137,7 +137,7 @@
             </div>
           </div>
         <!-- -->
-            
+
         </div>
         
 <!-- Bootstrap core JavaScript
