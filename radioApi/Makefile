@@ -1,17 +1,35 @@
 CC=gcc
+CFLAGS=-pthread -std=gnu99
+CFILES=radioApi.c dwebsvr.c
+TARGET=radioApi
 
-dwebmake: radioApi.c dwebsvr.c
-	$(CC) -o radioApi radioApi.c dwebsvr.c -pthread -std=gnu99
+$(TARGET): $(CFILES)
+	$(CC) $(CFILES) $(CFLAGS) -o $@
 
-vocore: radioApi.c dwebsvr.c
+vocore: $(CFILES) $(RESOURCES)
 	export STAGING_DIR=$$PWD; \
-`find /home -name mipsel-openwrt-linux-gcc -print -quit -print 2>/dev/null` -o radioApi -Os -s radioApi.c dwebsvr.c -pthread
+    `find /home -name mipsel-openwrt-linux-gcc -print -quit -print 2>/dev/null` -o $(TARGET) \
+    -Os -s $(CFILES) $(CFLAGS)
 
-wr740n: radioApi.c dwebsvr.c
+wr740n: $(CFILES) $(RESOURCES)
 	export STAGING_DIR=$$PWD; \
-`find /home -maxdepth 6 -name mips-openwrt-linux-uclibc-gcc -print -quit -print 2>/dev/null` -o radioApi -Os -s radioApi.c dwebsvr.c -pthread
+    `find /home -maxdepth 6 -name mips-openwrt-linux-uclibc-gcc -print -quit -print 2>/dev/null` -o $(TARGET) \
+    -Os -s $(CFILES) $(CFLAGS)
 
 .PHONY: clean
 
+install: $(TARGET)
+	cp -n $(TARGET) /usr/local/bin
+	cp -n init_script /etc/init.d/radioApi
+	chmod +x /etc/init.d/radioApi
+	update-rc.d radioApi defaults
+	/etc/init.d/radioApi start
+
+uninstall:
+	-/etc/init.d/radioApi stop
+	-update-rc.d -f radioApi remove
+	-rm -f /usr/local/bin/radioApi
+	-rm -f /etc/init.d/radioApi
+
 clean:
-	rm -f *.o *.exe radioApi
+	rm -f *.o $(TARGET)

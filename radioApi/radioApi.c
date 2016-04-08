@@ -46,10 +46,12 @@ struct {
   {0,0}
 };
 
+void quit_handler(int signal);
 int set_vol(int volume);
 void send_response(struct hitArgs *args, char*, char*, http_verb);
 void log_filter(log_type, char*, char*, int);
 void kill_player();
+void kill_all_children();
 void send_api_response(struct hitArgs *args, char*, char*);
 void send_file_response(struct hitArgs *args, char*, char*, int);
 void execpiped(char **cmdfrom, char **cmdto, int *frompid, int *topid);
@@ -58,6 +60,20 @@ int run(char **cmd);
 struct termios original_settings;
 pthread_t server_thread_id;
 int volpc = 8, lastwgetpid = 0, lastplayerpid = 0;
+pid_t parent_pid;
+
+void quit_handler(int signal)
+{
+  if (signal != SIGQUIT)
+  {
+    return;
+  }
+  pid_t current = getpid();
+  if (parent_pid != current)
+  {
+    exit(0);
+  }
+}
 
 void* server_thread(void *args)
 {
@@ -71,7 +87,7 @@ void close_down()
 {
   tcsetattr(STDIN_FILENO, TCSANOW, &original_settings);
   dwebserver_kill();
-  kill_player();
+  kill_all_children();
   pthread_cancel(server_thread_id);
   puts("Bye");
 }
@@ -97,6 +113,29 @@ int set_vol(int volume)
   return run(mixer) > 0 ? 1 : 0;
 }
 
+void kill_all_children()
+{
+  // quit all children
+  kill(-parent_pid, SIGQUIT);
+  lastwgetpid = 0;
+  lastplayerpid = 0;
+}
+
+/*void kill_player()
+{
+  if (lastplayerpid !=0)
+  {
+    kill(lastplayerpid, SIGKILL);
+    lastplayerpid = 0;
+  }
+	
+  if (lastwgetpid !=0)
+  {
+    kill(lastwgetpid, SIGKILL);
+    lastwgetpid = 0;
+  }
+}*/
+
 int main(int argc, char **argv)
 {
   if (argc < 2 || !strncmp(argv[1], "-h", 2))
@@ -104,7 +143,12 @@ int main(int argc, char **argv)
     printf("hint: radioApi [port number]\n");
     return 0;
   }
+  
+  signal(SIGQUIT, quit_handler);
+  parent_pid = getpid();
+  
   set_vol(volpc);
+  
   if (argc > 2 && !strncmp(argv[2], "-d", 2))
   {
     // don't read from the console or log anything
@@ -166,13 +210,13 @@ void send_api_response(struct hitArgs *args, char *path, char *request_body)
     {
       if (strncmp("streamurl", form_name(args, v), 9) == 0)
       {
-	kill_player();
+	kill_all_children();
 	
 	if (strlen(form_value(args, v)) > 0 && strncmp("stop", form_value(args, v), 4) != 0)
 	{
 	  // play the stream
 	  char *wget[] = { "/usr/bin/wget", "-q", "-O", "-", form_value(args, v), 0 };
-	  char *player[] = { "/usr/bin/madplay", "-Q", "-a-18", "-", 0 };
+	  char *player[] = { "/usr/bin/madplay", "-Q", "--fade-in=0:01", "-a-6", "-", 0 };
 	  execpiped(wget, player, &lastwgetpid, &lastplayerpid);
 	  if (lastwgetpid <= 0 || lastplayerpid <= 0)
 	  {
@@ -273,21 +317,6 @@ void send_file_response(struct hitArgs *args, char *path, char *request_body, in
   close(file_id);
 }
 
-void kill_player()
-{
-  if (lastplayerpid !=0)
-  {
-    kill(lastplayerpid, SIGKILL);
-    lastplayerpid = 0;
-  }
-	
-  if (lastwgetpid !=0)
-  {
-    kill(lastwgetpid, SIGKILL);
-    lastwgetpid = 0;
-  }
-}
-
 // pipe the output of the first command to the second
 void execpiped(char **cmdfrom, char **cmdto, int *frompid, int *topid)
 {
@@ -305,6 +334,8 @@ void execpiped(char **cmdfrom, char **cmdto, int *frompid, int *topid)
     execv(cmdfrom[0], cmdfrom);
     exit(1);
   }
+  
+  sleep(1); // buffer slightly before playing
   
   close(pipefd[1]); // close write end in parent
   

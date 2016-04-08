@@ -31,6 +31,11 @@
                      <ul class="nav navbar-nav">
                         <li><a href="doc.html"><span class="glyphicon glyphicon-education text-success" aria-hidden="true"></span> API</a></li>
                     </ul>
+                    <ul class="nav navbar-nav hidden-xs">
+                        <li><a href="index.html" onclick="window.open(this.href,'targetWindow','width=340,height=520,toolbar=0,location=0,status=0,menubar=0,scrollbars=0'); return false;">
+			  <span class="glyphicon glyphicon-modal-window text-success" aria-hidden="true"></span> Popout
+                        </a></li>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -99,16 +104,16 @@
                     </button>
                 </div>
                 
+                <div class="row text-center">
+		  <div class="col-md-4 col-md-offset-4">
+		    <label for="slider">Volume</label><br/>
+		    <div id="slider" style="width:260px" >&nbsp;</div>
+		  </div>
+		</div>
+                
                 <div class="col-md-4 col-md-offset-4">
                     <div id="debug" class="text-muted">&nbsp;</div>
                 </div>
-            </div>
-            
-            <div class="row text-center">
-	      <div class="col-md-4 col-md-offset-4">
-		<label for="slider">Volume</label>
-		<div id="slider" style="width:340px" >&nbsp;</div>
-	      </div>
             </div>
             
         </div>
@@ -130,7 +135,7 @@ var mute = 0;
 
 $(function ()
 {
-  $('#slider').slider({ value: volume })
+  $('#slider').slider({ value: volume, tooltip: 'hide' })
     .on('slide', function(ev)
     {
        if (volume == ev.value) return;
