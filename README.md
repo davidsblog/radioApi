@@ -4,9 +4,9 @@ radioApi
 ##Work in progress...
 
 A small Web-API for playing internet radio streams using **madplay**.  I am currently using it on a router running OpenWrt, but 
-I will use it on a Raspberry Pi too at some point.  *These* build instructions are aimed at Debian-based systems.
+I will use it on a Raspberry Pi too.  *These* build instructions are aimed at Debian-based systems.
 
-I have included a simple web-based UI which I'm using in the browser of my Android phone to work as a remote control. 
+I have included a simple UI which I'm using in the browser of my Android phone to work as a remote control. 
 
 To see details of the API, build and run the code and use the `API` link from the top menu to view `/doc.html` in your browser.
 
@@ -15,22 +15,22 @@ To see details of the API, build and run the code and use the `API` link from th
 Prerequisites
 ====
 
-You will need **wget** to read the streams, but it should be installed already.
+You will need **wget** to read the streams, but it should be installed already.  It's best to update first:
+```
+sudo apt-get update
+```
 
-You'll need **madplay** to play the radio streams:
-
+And you'll need **madplay** to play the radio streams:
 ```
 sudo apt-get install madplay
 ```
 
 You'll need **alsa-utils** for the volume control feature:
-
 ```
 sudo apt-get install alsa-utils
 ```
 
 Please test these packages are working by doing:
-
 ```
 madplay --help
 amixer --help
@@ -40,13 +40,16 @@ amixer --help
 
 ###How to build and run
 
-#####On Debian based systems (and the Raspberry Pi probaby)
+#####On Debian based systems (including the Raspberry Pi)
+
 You should be able to do this:
 ```
+sudo apt-get install git
 git clone https://github.com/davidsblog/radioApi
 cd radioApi/radioApi/
 sudo make install
 ```
+
 ...which will build everything and install it as a service (it will run at system start-up).  **The server will run on port 8112.** That means you can view the player by visiting http://192.168.1.2:8112/ (you need to substitute your machine's IP address). You can remove it from your system like this (assuming you are still in the `radioApi/radioApi/` directory):
 ```
 sudo make uninstall
@@ -56,8 +59,8 @@ sudo make uninstall
 
 #####Runing manually (or on different Linux versions)
 Just do this:
-
 ```
+sudo apt-get install git
 git clone https://github.com/davidsblog/radioApi
 cd radioApi/radioApi/
 make
