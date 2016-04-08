@@ -19,6 +19,12 @@
 #define FILE_CHUNK_SIZE 1024
 #define BIGGEST_FILE 104857600 // 100 Mb
 
+#ifdef __arm__
+  #define AUDIO "PCM"
+#else
+  #define AUDIO "Headphone"
+#endif
+
 struct {
     char *ext;
     char *filetype;
@@ -109,7 +115,7 @@ int set_vol(int volume)
 {
   char num[4];
   snprintf(num, 4, "%d", volume);
-  char *mixer[] = { "/usr/bin/amixer", "-q", "sset", "Headphone", num, 0};
+  char *mixer[] = { "/usr/bin/amixer", "-q", "sset", AUDIO, num, 0};
   return run(mixer) > 0 ? 1 : 0;
 }
 
