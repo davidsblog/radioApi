@@ -22,13 +22,13 @@
 
 #ifdef __arm__
   #define AUDIO "PCM"
-  #define ADJUST "-a0"
+  #define ADJUST "-a3"
 #elif __OPENWRT__
   #define AUDIO "Headphone"
   #define ADJUST "-a-6"
 #else
   #define AUDIO "Master"
-  #define ADJUST "-a6"
+  #define ADJUST "-a3"
 #endif
 
 struct {
@@ -103,7 +103,14 @@ void wait_for_key()
 
 int set_vol(int volume)
 {
-  double log_vol = (70 * log10((double)volume)) + 9;
+  #ifdef __arm__
+    double log_vol = (40 * log10((double)volume)) + 48;
+  #elif __OPENWRT__
+    double log_vol = (40 * log10((double)volume)) + 48;
+  #else
+    double log_vol = (60 * log10((double)volume)) + 22;
+  #endif
+
   if (log_vol < 0) log_vol = 0;
   char num[5];
   snprintf(num, 5, "%d%%", (int)log_vol);
