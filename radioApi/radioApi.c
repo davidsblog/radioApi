@@ -21,8 +21,13 @@
 
 #ifdef __arm__
   #define AUDIO "PCM"
-#else
+  #define ADJUST "-a0"
+#elif __OPENWRT__
   #define AUDIO "Headphone"
+  #define ADJUST "-a-6"
+#else
+  #define AUDIO "Master"
+  #define ADJUST "-a12"
 #endif
 
 struct {
@@ -56,7 +61,7 @@ void quit_handler(int signal);
 int set_vol(int volume);
 void send_response(struct hitArgs *args, char*, char*, http_verb);
 void log_filter(log_type, char*, char*, int);
-void kill_player();
+//void kill_player();
 void kill_all_children();
 void send_api_response(struct hitArgs *args, char*, char*);
 void send_file_response(struct hitArgs *args, char*, char*, int);
@@ -65,7 +70,7 @@ int run(char **cmd);
 
 struct termios original_settings;
 pthread_t server_thread_id;
-int volpc = 8, lastwgetpid = 0, lastplayerpid = 0;
+int volpc = 25, lastwgetpid = 0, lastplayerpid = 0;
 pid_t parent_pid;
 
 void quit_handler(int signal)
@@ -113,9 +118,9 @@ void wait_for_key()
 
 int set_vol(int volume)
 {
-  char num[4];
-  snprintf(num, 4, "%d", volume);
-  char *mixer[] = { "/usr/bin/amixer", "-q", "sset", AUDIO, num, 0};
+  char num[5];
+  snprintf(num, 5, "%d%%", volume);
+  char *mixer[] = { "/usr/bin/amixer", "-q", "sset", AUDIO, num, "-M", 0};
   return run(mixer) > 0 ? 1 : 0;
 }
 
@@ -222,7 +227,7 @@ void send_api_response(struct hitArgs *args, char *path, char *request_body)
 	{
 	  // play the stream
 	  char *wget[] = { "/usr/bin/wget", "-q", "-O", "-", form_value(args, v), 0 };
-	  char *player[] = { "/usr/bin/madplay", "-Q", "--fade-in=0:01", "-a-6", "-", 0 };
+	  char *player[] = { "/usr/bin/madplay", "-Q", "--fade-in=0:01", ADJUST, "-", 0 };
 	  execpiped(wget, player, &lastwgetpid, &lastplayerpid);
 	  if (lastwgetpid <= 0 || lastplayerpid <= 0)
 	  {
@@ -233,23 +238,23 @@ void send_api_response(struct hitArgs *args, char *path, char *request_body)
       else if (strncmp("volup", form_name(args, v), 5) == 0)
       {
 	// increase volume
-	volpc += volpc>=80 ? 0 : 4;
+	volpc += volpc>=100 ? 0 : 20;
 	error = adjust_volume(volpc);
       }
       else if (strncmp("voldn", form_name(args, v), 5) == 0)
       {
 	// decrease volume
-	volpc -= volpc<=0 ? 0 : 4;
+	volpc -= volpc<=0 ? 0 : 20;
 	error = adjust_volume(volpc);
       }
       else if (strncmp("volume", form_name(args, v), 6) == 0)
       {
 	// set volume
-	volpc = 8 * atoi(form_value(args, v));
+	volpc = 5 * atoi(form_value(args, v));
 	error = adjust_volume(volpc);
       }
-    }        
-    
+    }
+
     if (error == 1)
     {
       write_html(args->socketfd, "HTTP/1.1 409 Conflict\nContent-Type: text/plain\nConnection: close", "ERROR\n");

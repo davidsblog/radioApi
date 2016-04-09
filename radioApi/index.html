@@ -130,12 +130,12 @@
 <script src="js/bootstrap-slider.js"></script>
 
 <script>
-var volume = 1;
+var volume = 5;
 var mute = 0;
 
 $(function ()
 {
-  $('#slider').slider({ value: volume, tooltip: 'hide' })
+  $('#slider').slider({ min: 0, max: 20, value: volume, tooltip: 'hide' })
     .on('slide', function(ev)
     {
        if (volume == ev.value) return;
@@ -166,13 +166,13 @@ $(function ()
     }
     else if (this.id==="dn")
     {
-        if (--volume<0) volume = 0;
+        if (--volume < 0) volume = 0;
         $('#slider').slider('setValue', volume);
         command("volume", volume.toString(), "VOL DOWN");
     }
     else if (this.id==="up")
     {
-        if (++volume>10) volume = 10;
+        if (++volume > 20) volume = 20;
         $('#slider').slider('setValue', volume);
         command("volume", volume.toString(), "VOL UP");
     }

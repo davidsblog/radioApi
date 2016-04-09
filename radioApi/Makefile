@@ -9,12 +9,12 @@ $(TARGET): $(CFILES)
 vocore: $(CFILES) $(RESOURCES)
 	export STAGING_DIR=$$PWD; \
     `find /home -name mipsel-openwrt-linux-gcc -print -quit -print 2>/dev/null` -o $(TARGET) \
-    -Os -s $(CFILES) $(CFLAGS)
+    -Os -s $(CFILES) $(CFLAGS) -D __OPENWRT__
 
 wr740n: $(CFILES) $(RESOURCES)
 	export STAGING_DIR=$$PWD; \
     `find /home -maxdepth 6 -name mips-openwrt-linux-uclibc-gcc -print -quit -print 2>/dev/null` -o $(TARGET) \
-    -Os -s $(CFILES) $(CFLAGS)
+    -Os -s $(CFILES) $(CFLAGS) -D __OPENWRT__
 
 .PHONY: clean
 

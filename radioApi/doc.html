@@ -115,21 +115,21 @@
               
               <h3>Set volume:</h3>
               <p>To set a <i>specific</i> volume, post a form field called <b>volume</b> with a value in the range 
-              <b>0 - 10</b> to <code>/api</code>, eg:<br/>
-              <code>curl --data "volume=5" http://localhost:8112/api</code>
+              <b>0 - 20</b> to <code>/api</code>, eg:<br/>
+              <code>curl --data "volume=6" http://localhost:8112/api</code>
               <p>On success, the result will be a status code 200 with the text <code>OK</code>.</p>
               <form action="api" name="volumeset" method="post" enctype="application/x-www-form-urlencoded"> 
 		<input type="radio" name="volume" value="0" />Mute
-		<input type="radio" name="volume" value="1" />1
-		<input type="radio" name="volume" value="2" />2
-		<input type="radio" name="volume" value="3" />3
-		<input type="radio" name="volume" value="4" />4
-		<input type="radio" name="volume" value="5" />5
-		<input type="radio" name="volume" value="6" />6
-		<input type="radio" name="volume" value="7" />7
-		<input type="radio" name="volume" value="8" />8
-		<input type="radio" name="volume" value="9" />9
-		<input type="radio" name="volume" value="10"/>10<br/>
+		<input type="radio" name="volume" value="2" />1
+		<input type="radio" name="volume" value="4" />2
+		<input type="radio" name="volume" value="6" />3
+		<input type="radio" name="volume" value="8" />4
+		<input type="radio" name="volume" value="10" />5
+		<input type="radio" name="volume" value="12" />6
+		<input type="radio" name="volume" value="14" />7
+		<input type="radio" name="volume" value="16" />8
+		<input type="radio" name="volume" value="18" />9
+		<input type="radio" name="volume" value="20"/>10<br/>
 		<input type="submit" value="Submit">
 	      </form>
               </p>
