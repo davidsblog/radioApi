@@ -27,7 +27,7 @@
   #define ADJUST "-a-6"
 #else
   #define AUDIO "Master"
-  #define ADJUST "-a12"
+  #define ADJUST "-a6"
 #endif
 
 struct {
