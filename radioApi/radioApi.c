@@ -107,9 +107,7 @@ int set_vol(int volume)
   if (log_vol < 0) log_vol = 0;
   char num[5];
   snprintf(num, 5, "%d%%", (int)log_vol);
-  
-  printf("%d = %s\n", volume, num);
-  
+  //printf("%d = %s\n", volume, num);
   char *mixer[] = { "/usr/bin/amixer", "-q", "sset", AUDIO, num, 0};
   return run(mixer) > 0 ? 1 : 0;
 }
