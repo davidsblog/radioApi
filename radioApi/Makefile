@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-pthread -std=gnu99
+CFLAGS=-lm -pthread -std=gnu99
 CFILES=radioApi.c dwebsvr.c
 TARGET=radioApi
 
@@ -19,7 +19,7 @@ wr740n: $(CFILES) $(RESOURCES)
 .PHONY: clean
 
 install: $(TARGET)
-	cp -n $(TARGET) /usr/local/bin
+	cp -r ../radioApi /usr/local/bin
 	cp -n init_script /etc/init.d/radioApi
 	chmod +x /etc/init.d/radioApi
 	update-rc.d radioApi defaults
@@ -28,7 +28,7 @@ install: $(TARGET)
 uninstall:
 	-/etc/init.d/radioApi stop
 	-update-rc.d -f radioApi remove
-	-rm -f /usr/local/bin/radioApi
+	-rm -rf /usr/local/bin/radioApi
 	-rm -f /etc/init.d/radioApi
 
 clean:

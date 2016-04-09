@@ -13,6 +13,7 @@
 #include <pthread.h> // needed to run server on a new thread
 #include <termios.h> // needed for unbuffered_getch()
 #include <signal.h>  // needed for kill()
+#include <math.h>
 
 #include "dwebsvr.h"
 
@@ -57,12 +58,10 @@ struct {
   {0,0}
 };
 
-void quit_handler(int signal);
 int set_vol(int volume);
 void send_response(struct hitArgs *args, char*, char*, http_verb);
 void log_filter(log_type, char*, char*, int);
-//void kill_player();
-void kill_all_children();
+void kill_player();
 void send_api_response(struct hitArgs *args, char*, char*);
 void send_file_response(struct hitArgs *args, char*, char*, int);
 void execpiped(char **cmdfrom, char **cmdto, int *frompid, int *topid);
@@ -70,21 +69,7 @@ int run(char **cmd);
 
 struct termios original_settings;
 pthread_t server_thread_id;
-int volpc = 25, lastwgetpid = 0, lastplayerpid = 0;
-pid_t parent_pid;
-
-void quit_handler(int signal)
-{
-  if (signal != SIGQUIT)
-  {
-    return;
-  }
-  pid_t current = getpid();
-  if (parent_pid != current)
-  {
-    exit(0);
-  }
-}
+int vol = 5, lastwgetpid = 0, lastplayerpid = 0;
 
 void* server_thread(void *args)
 {
@@ -98,7 +83,7 @@ void close_down()
 {
   tcsetattr(STDIN_FILENO, TCSANOW, &original_settings);
   dwebserver_kill();
-  kill_all_children();
+  kill_player();
   pthread_cancel(server_thread_id);
   puts("Bye");
 }
@@ -118,21 +103,18 @@ void wait_for_key()
 
 int set_vol(int volume)
 {
+  double log_vol = (70 * log10((double)volume)) + 9;
+  if (log_vol < 0) log_vol = 0;
   char num[5];
-  snprintf(num, 5, "%d%%", volume);
-  char *mixer[] = { "/usr/bin/amixer", "-q", "sset", AUDIO, num, "-M", 0};
+  snprintf(num, 5, "%d%%", (int)log_vol);
+  
+  printf("%d = %s\n", volume, num);
+  
+  char *mixer[] = { "/usr/bin/amixer", "-q", "sset", AUDIO, num, 0};
   return run(mixer) > 0 ? 1 : 0;
 }
 
-void kill_all_children()
-{
-  // quit all children
-  kill(-parent_pid, SIGQUIT);
-  lastwgetpid = 0;
-  lastplayerpid = 0;
-}
-
-/*void kill_player()
+void kill_player()
 {
   if (lastplayerpid !=0)
   {
@@ -145,7 +127,7 @@ void kill_all_children()
     kill(lastwgetpid, SIGKILL);
     lastwgetpid = 0;
   }
-}*/
+}
 
 int main(int argc, char **argv)
 {
@@ -155,10 +137,7 @@ int main(int argc, char **argv)
     return 0;
   }
   
-  signal(SIGQUIT, quit_handler);
-  parent_pid = getpid();
-  
-  set_vol(volpc);
+  set_vol(vol);
   
   if (argc > 2 && !strncmp(argv[2], "-d", 2))
   {
@@ -221,7 +200,8 @@ void send_api_response(struct hitArgs *args, char *path, char *request_body)
     {
       if (strncmp("streamurl", form_name(args, v), 9) == 0)
       {
-	kill_all_children();
+	//kill_all_children();
+	kill_player();
 	
 	if (strlen(form_value(args, v)) > 0 && strncmp("stop", form_value(args, v), 4) != 0)
 	{
@@ -238,20 +218,20 @@ void send_api_response(struct hitArgs *args, char *path, char *request_body)
       else if (strncmp("volup", form_name(args, v), 5) == 0)
       {
 	// increase volume
-	volpc += volpc>=100 ? 0 : 20;
-	error = adjust_volume(volpc);
+	vol += vol >= 20 ? 0 : 1;
+	error = adjust_volume(vol);
       }
       else if (strncmp("voldn", form_name(args, v), 5) == 0)
       {
 	// decrease volume
-	volpc -= volpc<=0 ? 0 : 20;
-	error = adjust_volume(volpc);
+	vol -= vol <= 0 ? 0 : 1;
+	error = adjust_volume(vol);
       }
       else if (strncmp("volume", form_name(args, v), 6) == 0)
       {
 	// set volume
-	volpc = 5 * atoi(form_value(args, v));
-	error = adjust_volume(volpc);
+	vol = atoi(form_value(args, v));
+	error = adjust_volume(vol);
       }
     }
 

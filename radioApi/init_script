@@ -15,7 +15,7 @@
 case "$1" in 
     start)
         echo "Starting the radioApi service..."
-        /usr/local/bin/radioApi 8112 -d &
+        /usr/local/bin/radioApi/radioApi 8112 -d &
         echo "The radioApi service should be running"
         ;;
     stop)
