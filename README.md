@@ -68,7 +68,7 @@ sudo apt-get install git
 git clone https://github.com/davidsblog/radioApi
 cd radioApi/radioApi/
 make
-sudo ./radioApi 80
+./radioApi 80
 ```
 
 You might have a webserver already running on port 80, in which case you can specify a different port by passing a different parameter than **80** in the last line above.
