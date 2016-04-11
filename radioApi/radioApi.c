@@ -13,7 +13,9 @@
 #include <pthread.h> // needed to run server on a new thread
 #include <termios.h> // needed for unbuffered_getch()
 #include <signal.h>  // needed for kill()
-#include <math.h>
+#ifndef __OPENWRT__
+  #include <math.h>
+#endif
 
 #include "dwebsvr.h"
 
@@ -106,7 +108,7 @@ int set_vol(int volume)
   #ifdef __arm__
     double log_vol = (40 * log10((double)volume)) + 48;
   #elif __OPENWRT__
-    double log_vol = (40 * log10((double)volume)) + 48;
+    double log_vol = 2 + volume * 1.5; // linear
   #else
     double log_vol = (60 * log10((double)volume)) + 22;
   #endif

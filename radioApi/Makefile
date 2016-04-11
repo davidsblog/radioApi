@@ -1,10 +1,10 @@
 CC=gcc
-CFLAGS=-lm -pthread -std=gnu99
+CFLAGS=-pthread -std=gnu99
 CFILES=radioApi.c dwebsvr.c
 TARGET=radioApi
 
 $(TARGET): $(CFILES)
-	$(CC) $(CFILES) $(CFLAGS) -o $@
+	$(CC) $(CFILES) $(CFLAGS) -lm -o $@
 
 vocore: $(CFILES) $(RESOURCES)
 	export STAGING_DIR=$$PWD; \
