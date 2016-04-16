@@ -20,7 +20,7 @@ case "$1" in
         ;;
     stop)
         echo "Stopping the radioApi service..."
-        killall -q radioApi &
+        killall -q radioApi madplay &
         echo "The radioApi service should be stopped"
         ;;
     *)

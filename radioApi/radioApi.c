@@ -111,15 +111,23 @@ void wait_for_key()
 
 int set_vol(int volume)
 {
-  #ifdef __arm__
-    double log_vol = (40 * log10((double)volume)) + 48;
-  #elif __OPENWRT__
-    double log_vol = volume * 1.5; // linear
-  #else
-    double log_vol = (60 * log10((double)volume)) + 22;
-  #endif
+  double log_vol;
+  
+  if (volume > 0)
+  {
+    #ifdef __arm__
+      log_vol = (40 * log10((double)volume)) + 48;
+    #elif __OPENWRT__
+      log_vol = volume * 1.5; // linear
+    #else
+      log_vol = (60 * log10((double)volume)) + 22;
+    #endif
+  }
+  else
+  {
+    log_vol = 0;
+  }
 
-  if (log_vol < 0) log_vol = 0;
   char num[5];
   snprintf(num, 5, "%d%%", (int)log_vol);
   //printf("%d = %s\n", volume, num);
@@ -150,9 +158,10 @@ int main(int argc, char **argv)
     return 0;
   }
   
-  set_vol(vol);
+  // anything going to stderr will get sent to "errors.txt"
   err = fopen("errors.txt", "a");
   dup2(fileno(err), STDERR_FILENO);
+  set_vol(vol);
   
   if (argc > 2 && !strncmp(argv[2], "-d", 2))
   {

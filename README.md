@@ -1,16 +1,15 @@
 radioApi
 ====
 
-##Work in progress...
-
-A small Web-API for playing internet radio streams using **madplay**.  I am mainly using it on a router running OpenWrt, but 
+A small Web-API for playing internet radio streams using **madplay**.  I am mainly using it on a tiny router running OpenWrt, but 
 I do use it on a Raspberry Pi as well.  I'm using **madplay** because it runs nicely on my router, and it streams internet radio pretty well. 
 *These* build instructions are aimed at Debian-based systems.  But cross-compiling for OpenWrt is also possible.
 
 NOTE: I'm currently testing it on a **hardened** version of Raspbian, aka 
 [IPE V1 R2](http://www.andreasgiemza.de/allgemein/ipe-r1-v2/), and it needs me to run ```modprobe snd_bcm2835``` 
-before I start the server to enable sound output.  This hardened version of Raspbian is useful because it uses a 
-read-only file system, so I can safely switch the Raspberry Pi off without killing file system on my SD card. 
+to enable sound output before I start the server.  The hardened version of Raspbian is useful because it uses a 
+read-only file system, so I can safely switch the Raspberry Pi off at any time without killing file system on my SD card. 
+It also means that I can run my Radio Player on Raspberry Pi from a battery.
 
 I have included a simple UI which I'm using in the browser of my Android phone to work as a remote control, it looks like this: 
 
@@ -18,12 +17,16 @@ I have included a simple UI which I'm using in the browser of my Android phone t
 
 To see details of the API, build and run the code and use the `API` link from the top menu to view `/doc.html` in your browser.
 
-**NOTE: the code is set for using the _headphone socket_ as the audio output.**
+At the moment, I am redirecting any errors (output going to `stderr`) to a file called **errors.txt** and you should be able to 
+view that in your browser (ie http://localhost:8112/errors.txt) in case there are problems.  In theory you should wipe this file 
+from time to time to prevent it from growing too big.
+
+**NOTE: the code is really designed for using the _headphone socket_ as the audio output.**
 
 Prerequisites
 ====
 
-You will need **wget** to read the streams, but it should be installed already.  It's best to update first:
+You will need **wget** to read the streams, but it should be installed already.  It's best to do an update first:
 ```
 sudo apt-get update
 ```
@@ -58,7 +61,9 @@ cd radioApi/radioApi/
 sudo make install
 ```
 
-...which will build everything and install it as a service (it will run at system start-up).  **The server will run on port 8112.** That means you can view the player by visiting http://192.168.1.2:8112/ (you need to substitute your machine's IP address). You can remove it from your system like this (assuming you are still in the `radioApi/radioApi/` directory):
+...which will build everything and install it as a service (it will run at system start-up).  **The server will run on port 8112.** 
+That means you can view the player by visiting http://localhost:8112/. 
+You can remove it from your system like this (assuming you are still in the `radioApi/radioApi/` directory):
 ```
 sudo make uninstall
 ```
