@@ -6,7 +6,7 @@ I do use it on a Raspberry Pi as well.  I'm using **madplay** because it runs ni
 *These* build instructions are aimed at Debian-based systems.  But cross-compiling for OpenWrt is also possible.
 
 NOTE: I'm currently testing it on a **hardened** version of Raspbian, aka 
-[IPE V1 R2](http://www.andreasgiemza.de/allgemein/ipe-r1-v2/), and it needs me to run ```modprobe snd_bcm2835``` 
+[IPE V1 R2](http://www.andreasgiemza.de/allgemein/ipe-r1-v2/), and it needs me to run<br/>```modprobe snd_bcm2835``` 
 to enable sound output before I start the server.  The hardened version of Raspbian is useful because it uses a 
 read-only file system, so I can safely switch the Raspberry Pi off at any time without killing file system on my SD card. 
 It also means that I can run my Radio Player on Raspberry Pi from a battery.
