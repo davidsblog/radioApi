@@ -178,6 +178,8 @@ $(function ()
     }
     else if (this.id==="ply")
     {
+        $("#ply").prop('disabled', true);
+        setTimeout(function(){ $("#ply").prop('disabled', false); }, 1500);
         var station;
         if ($("#manualstation").val() == "")
         {
