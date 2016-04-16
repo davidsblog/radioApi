@@ -3,12 +3,13 @@ radioApi
 
 ##Work in progress...
 
-A small Web-API for playing internet radio streams using **madplay**.  I am currently using it on a router running OpenWrt, but 
-I will use it on a Raspberry Pi too.  *These* build instructions are aimed at Debian-based systems.
+A small Web-API for playing internet radio streams using **madplay**.  I am mainly using it on a router running OpenWrt, but 
+I do use it on a Raspberry Pi too.  I'm using **madplay** because it runs nicely on my router, and it streams internet radio pretty well. 
+*These* build instructions are aimed at Debian-based systems.  But cross-compiling for OpenWrt is also possible.
 
-NOTE: I'm currently testing it on a **hardened** version of Raspbian (aka 
-<a href="http://www.andreasgiemza.de/allgemein/ipe-r1-v2/">IPE V1 R2</a>) and it needs me to run ```modprobe snd_bcm2835``` 
-before I start the server.
+NOTE: I'm currently testing it on a **hardened** version of Raspbian, aka 
+[IPE V1 R2](http://www.andreasgiemza.de/allgemein/ipe-r1-v2/), and it needs me to run ```modprobe snd_bcm2835``` 
+before I start the server to enable sound output.
 
 I have included a simple UI which I'm using in the browser of my Android phone to work as a remote control. 
 

@@ -63,6 +63,7 @@ struct {
 int set_vol(int volume);
 void send_response(struct hitArgs *args, char*, char*, http_verb);
 void log_filter(log_type, char*, char*, int);
+void null_log(log_type, char*, char*, int);
 void kill_player();
 void send_api_response(struct hitArgs *args, char*, char*);
 void send_file_response(struct hitArgs *args, char*, char*, int);
@@ -72,6 +73,7 @@ int run(char **cmd);
 struct termios original_settings;
 pthread_t server_thread_id;
 int vol = 5, lastwgetpid = 0, lastplayerpid = 0;
+FILE *err = NULL;
 
 void* server_thread(void *args)
 {
@@ -86,6 +88,10 @@ void close_down()
   tcsetattr(STDIN_FILENO, TCSANOW, &original_settings);
   dwebserver_kill();
   kill_player();
+  if (err != NULL)
+  {
+    fclose(err);
+  }
   pthread_cancel(server_thread_id);
   puts("Bye");
 }
@@ -108,7 +114,7 @@ int set_vol(int volume)
   #ifdef __arm__
     double log_vol = (40 * log10((double)volume)) + 48;
   #elif __OPENWRT__
-    double log_vol = 2 + volume * 1.5; // linear
+    double log_vol = volume * 1.5; // linear
   #else
     double log_vol = (60 * log10((double)volume)) + 22;
   #endif
@@ -145,11 +151,13 @@ int main(int argc, char **argv)
   }
   
   set_vol(vol);
+  err = fopen("errors.txt", "a");
+  dup2(fileno(err), STDERR_FILENO);
   
   if (argc > 2 && !strncmp(argv[2], "-d", 2))
   {
     // don't read from the console or log anything
-    dwebserver(atoi(argv[1]), &send_response, NULL);
+    dwebserver(atoi(argv[1]), &send_response, &null_log);
   }
   else
   {
@@ -171,6 +179,11 @@ void log_filter(log_type type, char *s1, char *s2, int socket_fd)
     return;
   }
   printf("ERROR: %s: %s (errno=%d pid=%d socket=%d)\n",s1, s2, errno, getpid(), socket_fd);
+}
+
+void null_log(log_type type, char *s1, char *s2, int socket_fd)
+{
+  // don't do anything...
 }
 
 // decide if we need to send an API response or a file...
