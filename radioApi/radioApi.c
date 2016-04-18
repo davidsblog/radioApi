@@ -160,7 +160,10 @@ int main(int argc, char **argv)
   
   // anything going to stderr will get sent to "errors.txt"
   err = fopen("errors.txt", "a");
-  dup2(fileno(err), STDERR_FILENO);
+  if (err != NULL)
+  {  
+    dup2(fileno(err), STDERR_FILENO);
+  }
   set_vol(vol);
   
   if (argc > 2 && !strncmp(argv[2], "-d", 2))
