@@ -132,22 +132,22 @@ int set_vol(int volume)
   snprintf(num, 5, "%d%%", (int)log_vol);
   //printf("%d = %s\n", volume, num);
   char *mixer[] = { "/usr/bin/amixer", "-q", "sset", AUDIO, num, 0};
-  return run(mixer) > 0 ? 1 : 0;
+  return run(mixer) > 0 ? 0 : 1;
 }
 
 void kill_player()
 {
-  if (lastplayerpid != 0)
+  if (lastplayerpid > 0)
   {
     kill(lastplayerpid, SIGKILL);
-    lastplayerpid = 0;
   }
-	
-  if (lastwgetpid !=0)
+  lastplayerpid = 0;
+
+  if (lastwgetpid > 0)
   {
     kill(lastwgetpid, SIGKILL);
-    lastwgetpid = 0;
   }
+  lastwgetpid = 0;
 }
 
 int main(int argc, char **argv)
@@ -216,11 +216,6 @@ void send_response(struct hitArgs *args, char *path, char *request_body, http_ve
   send_file_response(args, path, request_body, path_length);
 }
 
-int adjust_volume(int vol)
-{
-  return set_vol(vol) == 1 ? 0 : 1;
-}
-
 void send_api_response(struct hitArgs *args, char *path, char *request_body)
 {
   int error = 0;
@@ -232,7 +227,6 @@ void send_api_response(struct hitArgs *args, char *path, char *request_body)
     {
       if (strncmp("streamurl", form_name(args, v), 9) == 0)
       {
-	//kill_all_children();
 	kill_player();
 	
 	if (strlen(form_value(args, v)) > 0 && strncmp("stop", form_value(args, v), 4) != 0)
@@ -241,7 +235,7 @@ void send_api_response(struct hitArgs *args, char *path, char *request_body)
 	  char *wget[] = { "/usr/bin/wget", "-q", "-O", "-", form_value(args, v), 0 };
 	  char *player[] = { "/usr/bin/madplay", "-Q", "--fade-in=0:01", ADJUST, "-", 0 };
 	  execpiped(wget, player, &lastwgetpid, &lastplayerpid);
-	  if (lastwgetpid <= 0 || lastplayerpid <= 0)
+	  if (lastwgetpid == 0 || lastplayerpid == 0)
 	  {
 	    error = 1;
 	  }
@@ -251,19 +245,27 @@ void send_api_response(struct hitArgs *args, char *path, char *request_body)
       {
 	// increase volume
 	vol += vol >= 20 ? 0 : 1;
-	error = adjust_volume(vol);
+	error = set_vol(vol);
       }
       else if (strncmp("voldn", form_name(args, v), 5) == 0)
       {
 	// decrease volume
 	vol -= vol <= 0 ? 0 : 1;
-	error = adjust_volume(vol);
+	error = set_vol(vol);
       }
       else if (strncmp("volume", form_name(args, v), 6) == 0)
       {
 	// set volume
 	vol = atoi(form_value(args, v));
-	error = adjust_volume(vol);
+	if (vol > 20)
+	{
+	  vol = 20;
+	}
+	if (vol < 0)
+	{
+	  vol = 0;
+	}
+	error = set_vol(vol);
       }
     }
 
@@ -290,7 +292,7 @@ void send_file_response(struct hitArgs *args, char *path, char *request_body, in
   STRING *response = new_string(FILE_CHUNK_SIZE);
 
   // work out the file type and check we support it
-  for (i=0; extensions[i].ext != 0; i++)
+  for (i = 0; extensions[i].ext != 0; i++)
   {
     len = strlen(extensions[i].ext);
     if (!strncmp(&path[path_length-len], extensions[i].ext, len))
@@ -351,9 +353,9 @@ void execpiped(char **cmdfrom, char **cmdto, int *frompid, int *topid)
   {
     // see: http://stackoverflow.com/questions/2605130/redirecting-exec-output-to-a-buffer-or-file
     // this command sends stdout to the pipe
-    close(pipefd[0]); // close reading end in child process
+    close(pipefd[0]);   // close reading end in child process
     dup2(pipefd[1], 1); // send stdout
-    close(pipefd[1]); // no longer needed
+    close(pipefd[1]);   // no longer needed
     execv(cmdfrom[0], cmdfrom);
     exit(1);
   }
@@ -373,7 +375,7 @@ void execpiped(char **cmdfrom, char **cmdto, int *frompid, int *topid)
     // see: http://stackoverflow.com/questions/9487695/redirecting-input-from-file-to-exec
     // this command reads stdin from the stdout of the last command
     dup2(pipefd[0], 0); // get stdin
-    close(pipefd[0]); // no longer needed
+    close(pipefd[0]);   // no longer needed
     execv(cmdto[0], cmdto);
     exit(1);
   }
