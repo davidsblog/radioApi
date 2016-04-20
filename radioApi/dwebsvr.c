@@ -166,7 +166,7 @@ void notfound_404(struct hitArgs *args, char *info)
 
 void ok_200(struct hitArgs *args, char *custom_headers, char *html, char *path)
 {
-	STRING *headers = new_string(255);
+    STRING *headers = new_string(255);
     string_add(headers, "HTTP/1.1 200 OK\nServer: dweb\nCache-Control: no-cache\nPragma: no-cache");
     if (custom_headers != NULL)
     {

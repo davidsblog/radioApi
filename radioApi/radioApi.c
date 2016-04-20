@@ -137,7 +137,7 @@ int set_vol(int volume)
 
 void kill_player()
 {
-  if (lastplayerpid !=0)
+  if (lastplayerpid != 0)
   {
     kill(lastplayerpid, SIGKILL);
     lastplayerpid = 0;
@@ -358,9 +358,14 @@ void execpiped(char **cmdfrom, char **cmdto, int *frompid, int *topid)
     exit(1);
   }
   
-  sleep(1); // buffer slightly before playing
-  
   close(pipefd[1]); // close write end in parent
+  
+  if (*frompid <= 0)
+  {
+    // didn't start the first command...
+    *frompid = 0;
+    return;
+  }
   
   *topid = fork();
   if (*topid == 0)
@@ -374,6 +379,15 @@ void execpiped(char **cmdfrom, char **cmdto, int *frompid, int *topid)
   }
   
   close(pipefd[0]); // close read end in parent
+  
+  if (*topid <= 0)
+  {
+    // didn't start the second command...
+     kill(*frompid, SIGKILL);
+     *frompid = 0;
+     *topid = 0;
+     return;
+  }
 }
 
 int run(char **cmd)
