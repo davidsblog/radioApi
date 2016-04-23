@@ -77,7 +77,6 @@ FILE *err = NULL;
 
 void* server_thread(void *args)
 {
-  pthread_detach(pthread_self());
   char *arg = (char*)args;
   dwebserver(atoi(arg), &send_response, &log_filter);
   return NULL;
@@ -92,7 +91,9 @@ void close_down()
   {
     fclose(err);
   }
+  
   pthread_cancel(server_thread_id);
+  pthread_join(server_thread_id, NULL);
   puts("Bye");
 }
 
@@ -175,13 +176,15 @@ int main(int argc, char **argv)
   {
     if (pthread_create(&server_thread_id, NULL, server_thread, argv[1]) != 0)
     {
-      puts("Error: pthread_create could not create server thread");
+      fputs("ERROR: pthread_create could not create server thread", stderr);
       return 0;
     }
 
     puts("Radio server started\nPress any key to quit.");
     wait_for_key();
   }
+  
+  return 0;
 }
 
 void log_filter(log_type type, char *s1, char *s2, int socket_fd)
@@ -190,7 +193,7 @@ void log_filter(log_type type, char *s1, char *s2, int socket_fd)
   {
     return;
   }
-  printf("ERROR: %s: %s (errno=%d pid=%d socket=%d)\n",s1, s2, errno, getpid(), socket_fd);
+  fprintf(stderr, "ERROR: %s: %s (errno=%d pid=%d socket=%d)\n",s1, s2, errno, getpid(), socket_fd);
 }
 
 void null_log(log_type type, char *s1, char *s2, int socket_fd)
@@ -353,6 +356,7 @@ void execpiped(char **cmdfrom, char **cmdto, int *frompid, int *topid)
   {
     // see: http://stackoverflow.com/questions/2605130/redirecting-exec-output-to-a-buffer-or-file
     // this command sends stdout to the pipe
+    signal(SIGPIPE, SIG_DFL);
     close(pipefd[0]);   // close reading end in child process
     dup2(pipefd[1], 1); // send stdout
     close(pipefd[1]);   // no longer needed
@@ -374,6 +378,7 @@ void execpiped(char **cmdfrom, char **cmdto, int *frompid, int *topid)
   {
     // see: http://stackoverflow.com/questions/9487695/redirecting-input-from-file-to-exec
     // this command reads stdin from the stdout of the last command
+    signal(SIGPIPE, SIG_DFL);
     dup2(pipefd[0], 0); // get stdin
     close(pipefd[0]);   // no longer needed
     execv(cmdto[0], cmdto);
