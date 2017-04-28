@@ -49,9 +49,9 @@ amixer --help
 
 ...to make sure they display their help texts, the code won't work without them.
 
-###How to build and run
+### How to build and run
 
-#####On Debian based systems (including the Raspberry Pi)
+##### On Debian based systems (including the Raspberry Pi)
 
 You should be able to do this:
 ```
@@ -70,7 +70,7 @@ sudo make uninstall
 
 **NOTE:** the `sudo` before calling make above is important, since you're installing services.
 
-#####Runing manually (or on different Linux versions)
+##### Runing manually (or on different Linux versions)
 Just do this:
 ```
 sudo apt-get install git
